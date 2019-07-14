@@ -1,14 +1,17 @@
-* tic-tac-toe
+#+TITLE: tic-tac-toe
+#+AUTHOR: calmwalter
+#+DATE: <2019-07-14 Sun>
 
-** summary
+
+* summary
    to finish this projects,what i should do is:
-*** TODO game UI
-**** put chess
-**** judge the win or loss
-**** restart the game
-*** TODO states store tree
-**** node
-***** attributes
+** TODO game UI
+*** put chess
+*** judge the win or loss
+*** restart the game
+** TODO states store tree
+*** node
+**** attributes
       | parent node | a point point to the parent node          |
       | child node  | a point point to the child node           |
       | next node   | the point point to the next node          |
@@ -16,21 +19,24 @@
       | depth       | the depth of the current node in the tree |
       | q-value     | q value of every action of the state      | 
       
-**** tree
-***** attributes
+*** tree
+**** attributes
       | head node | the head node of the tree |
-***** function
+**** function
       | instert   | insert a node to the tree    |
       | find node | find the node we want to get |
 
-*** TODO Q function
+** TODO Q function
 [[./a.png]]
 new Q value equals the sum of the previous Q value and the learned value
 
 
-*** TODO policy pi
-**** random choose an action
+** TODO policy pi
+*** random choose an action
      
-**** choose the optimal policy
+*** choose the optimal policy
 
-*** TODO value update and main function
+** TODO value update and main function
+*** value update
+     when the game end, we should update every state we pass through the whole procedure.
+     we should trace back the whole procedure and update the value by Q function

@@ -31,20 +31,13 @@ class Tree:
         when i instert a node, i should:
         first, check if the node already in the tree
         second, find the last None node and put the new node to it
-        third, set the parent node and the child node
         '''
         if parent_node.child_node == None:
             parent_node.child_node = node
         else:
             current_node = parent_node.next_node
-            flag = False
             while current_node.next_node!=None:
-                pass
                 current_node = current_node.next_node
             current_node.next_node = node
-            
     def find_node(self,node):
         pass
-
-
-    

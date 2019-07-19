@@ -201,7 +201,7 @@ class tic_tac_toe:
         episode = 0
         while episode < 500:
             while game.win_judge()==0:
-                
+                pass
             
             
 if __name__ == "__main__":

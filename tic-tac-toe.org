@@ -23,12 +23,15 @@
 **** attributes
       | head node | the head node of the tree |
 **** function
-      | instert   | insert a node to the tree    |
+      | insert    | insert a node to the tree    |
       | find node | find the node we want to get |
 
 ** TODO Q function
 [[./a.png]]
 new Q value equals the sum of the previous Q value and the learned value
+| alpha           | the learning rate of the bot               |
+| discount factor | discount the max q value of the next state |
+| reward          | the reward get after the game end          |
 
 
 ** TODO policy pi

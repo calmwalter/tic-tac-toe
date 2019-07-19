@@ -10,6 +10,8 @@ reward:when a game finish, reward every state if win, else punish every state
 import sys
 import pygame
 import numpy as np
+from tree import *
+import random
 '''
 the game UI
 
@@ -62,6 +64,9 @@ class GAME:
             pygame.display.update()
 
     def judge_win(self, x, y):
+        '''
+        if someone win return 1,else if its equal return 2, else return 0
+        '''
         chess = self.board[x][y] % 2
         cnt = 0
         i = x
@@ -162,8 +167,43 @@ class GAME:
             if iswin == 2:
                 self.step = 0
                 self.board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+            
 
+class tic_tac_toe:
+    def __init__(self):
+        self.step = 0
+        self.states_tree = Tree(None)
 
+    def strategy_pi(self,current_node):
+        '''
+        random choose or choose the most significant
+        '''
+        if random.randint(1,10)<8:
+            #get the smost significant strategy
+            maxaction=0
+            for action in current_node.actions:
+                if current_node[action] > current_node[maxaction]:
+                    maxaction = action
+            return maxaction
+        else:
+            #get the random choosed strategy
+            return random.choice(current_node.actions)
+        
+    def Q_function(self,q,maxq,alpha,discount_factor, reward):
+        return q+(1-alpha)(reward+discount_factor*maxq-q)
+
+    def run(self):
+        game = GAME()
+        head_node = Node(None,None)
+        
+        tree = Tree(head_node)
+        pos = strategy_pi()
+        episode = 0
+        while episode < 500:
+            while game.win_judge()==0:
+                
+            
+            
 if __name__ == "__main__":
     newGame = GAME()
     newGame.run()

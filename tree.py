@@ -17,15 +17,14 @@ class Node:
         for i in range(9):
             if i not in self.states:
                 self.actions[i]=0
-        
-        
+
 class Tree:
     '''
-    this is the main class to store the data of the game 
+    this is the main class to store the data of the game
     '''
     def __init__(self,head_node):
         self.head_node = head_node
-        
+
     def insert(self,parent_node,node):
         '''
         when i instert a node, i should:
@@ -42,9 +41,8 @@ class Tree:
                 pass
                 current_node = current_node.next_node
             current_node.next_node = node
-            
+
     def find_node(self,node):
         pass
 
 
-    

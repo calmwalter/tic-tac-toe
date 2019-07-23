@@ -17,6 +17,16 @@ class Node:
         for i in range(9):
             if i not in self.states:
                 self.actions[i]=0
+    def isEqual(self,node):
+        if len(self.states) != len(node.states):
+            return False
+        le = len(self.states)
+        for i in range(le):
+            if self.states[i] != node.states[i]:
+                return False
+        return True
+
+
 
 class Tree:
     '''
@@ -36,12 +46,13 @@ class Tree:
             parent_node.child_node = node
         else:
             current_node = parent_node.next_node
-            flag = False
             while current_node.next_node!=None:
-                pass
+                if current_node.isEqual(node):
+                    return
                 current_node = current_node.next_node
             current_node.next_node = node
-
+            node.parent_node = current_node
+            
     def find_node(self,node):
         pass
 

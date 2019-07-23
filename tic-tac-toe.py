@@ -160,50 +160,82 @@ class GAME:
         if self.board[x][y] == 0:
             self.step += 1
             self.board[x][y] = self.step
-            iswin = self.judge_win(x, y)
-            if iswin == 1:
-                self.step = 0
-                self.board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
-            if iswin == 2:
-                self.step = 0
-                self.board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
-            
+            # iswin = self.judge_win(x, y)
+            # if iswin == 1:
+            #     self.step = 0
+            #     self.board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+            # if iswin == 2:
+            #     self.step = 0
+            #     self.board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+
+    def restart(self):
+        self.step = 0
+        self.board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+
 
 class tic_tac_toe:
     def __init__(self):
         self.step = 0
         self.states_tree = Tree(None)
 
-    def strategy_pi(self,current_node):
+    def strategy_pi(self, current_node):
         '''
         random choose or choose the most significant
         '''
-        if random.randint(1,10)<8:
-            #get the smost significant strategy
-            maxaction=0
+        if random.randint(1, 10) < 8:
+            # get the smost significant strategy
+            maxaction = 0
             for action in current_node.actions:
                 if current_node[action] > current_node[maxaction]:
                     maxaction = action
             return maxaction
         else:
-            #get the random choosed strategy
+            # get the random choosed strategy
             return random.choice(current_node.actions)
-        
-    def Q_function(self,q,maxq,alpha,discount_factor, reward):
+
+    def Q_function(self, q, maxq, alpha, discount_factor, reward):
         return q+(1-alpha)(reward+discount_factor*maxq-q)
 
     def run(self):
         game = GAME()
-        head_node = Node(None,None)
-        
-        tree = Tree(head_node)
-        pos = strategy_pi()
+
         episode = 0
         while episode < 500:
-            while game.win_judge()==0:
-                pass
-            
-            
+            head_node = Node(None, None)
+
+            tree = Tree(head_node)
+            pos = self.strategy_pi(tree.head_node)
+            y = pos // 3
+            x = pos % 3
+            game.put_chess(x, y)
+            node = Node(tree.head_node, pos)
+            tree.insert(tree.head_node, node)
+            current_node = node
+            # if the game not end
+            iswin = game.judge_win(x, y) 
+            while iswin == 0:
+                # continue to go next step
+                pos = self.strategy_pi(tree.head_node)
+                y = pos//3
+                x = pos % 3
+                game.put_chess(x, y)
+                node = Node(current_node, pos)
+                tree.insert(current_node, node)
+                current_node = node
+                iswin = game.judge_win(x, y)
+
+            # if the game end:
+            # use Q function update every node use trace back
+            # if win, reward 100
+            # if lose, reward -100
+            # if equal, reward 10
+            if iswin == 1
+            while current_node != tree.head_node:
+                    
+            # restart the game
+            game.restart()
+
+
 if __name__ == "__main__":
     newGame = GAME()
     newGame.run()

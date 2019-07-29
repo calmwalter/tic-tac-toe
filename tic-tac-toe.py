@@ -174,9 +174,11 @@ class GAME:
 
 
 class tic_tac_toe:
-    def __init__(self):
+    def __init__(self,alpha,discount_factor):
         self.step = 0
         self.states_tree = Tree(None)
+        self.alpha = alpha
+        self.discount_factor = discount_factor
 
     def strategy_pi(self, current_node):
         '''
@@ -198,12 +200,11 @@ class tic_tac_toe:
 
     def run(self):
         game = GAME()
-
+        head_node = Node(None, None)
+        tree = Tree(head_node)
         episode = 0
         while episode < 500:
-            head_node = Node(None, None)
 
-            tree = Tree(head_node)
             pos = self.strategy_pi(tree.head_node)
             y = pos // 3
             x = pos % 3
@@ -229,9 +230,22 @@ class tic_tac_toe:
             # if win, reward 100
             # if lose, reward -100
             # if equal, reward 10
-            if iswin == 1
+            end_node = len(current_node.states)%2
+            temp = current_node.states[len(current_node.states)-1]
+            current_node = current_node.parent_node
             while current_node != tree.head_node:
-                    
+                q = current_node.actions[temp]
+                maxq = tree.find_max_actions(current_node)
+                if iswin == 1:
+                    if len(current_node.states)%2 == end_node:
+                        current_node.actions[temp]=self.Q_function(q,maxq,self.alpha,self.discount_factor,100)
+                    else:
+                        current_node.actions[temp]=self.Q_function(q,maxq,self.alpha,self.discount_factor,-100)
+                elif iswin == 2:
+                    current_node.actions[temp]=self.Q_function(q,maxq,self.alpha,self.discount_factor,10)
+                temp = current_node.states[len(current_node.states)-1]
+                current_node = current_node.parent_node
+                        
             # restart the game
             game.restart()
 

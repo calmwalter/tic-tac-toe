@@ -53,7 +53,11 @@ class Tree:
             current_node.next_node = node
             node.parent_node = current_node
             
-    def find_node(self,node):
-        pass
+    def find_max_actions(self,node):
+        maxq = -1000000000.0
+        for x in node.actions:
+            if node.actions[x]>maxq:
+                maxq = node.actions[x]
+        return maxq
 
 

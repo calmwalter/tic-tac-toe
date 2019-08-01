@@ -12,6 +12,7 @@ import pygame
 import numpy as np
 from tree import *
 import random
+import time
 '''
 the game UI
 
@@ -32,36 +33,35 @@ class GAME:
         self.board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
     def run(self):
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    # print(event.pos)
-                    x = event.pos[0]//200
-                    y = event.pos[1]//200
-                    self.put_chess(x, y)
-            self.screen.fill((255, 255, 255))
-            for i in range(4):
-                pygame.draw.line(self.screen, (0, 0, 0),
-                                 [0, i*200], [3*200, i*200], 5)
-                pygame.draw.line(self.screen, (0, 0, 0),
-                                 [i*200, 0], [i*200, 3*200], 5)
-            for i in range(3):
-                for j in range(3):
-                    if self.board[j][i] != 0:
-                        if self.board[j][i] % 2 == 0:
-                            # circle
-                            pygame.draw.circle(self.screen, (255, 0, 0), [
-                                               100+j*200, 100+i*200], 100, 10)
-                        else:
-                            # cross
-                            pygame.draw.line(self.screen, (0, 0, 255),
-                                             [200*j, 200*i], [200*(j+1), 200*(i+1)], 10)
-                            pygame.draw.line(self.screen, (0, 0, 255),
-                                             [200*j, 200*(i+1)], [200*(j+1), 200*i], 10)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                # print(event.pos)
+                x = event.pos[0]//200
+                y = event.pos[1]//200
+                self.put_chess(x, y)
+        self.screen.fill((255, 255, 255))
+        for i in range(4):
+            pygame.draw.line(self.screen, (0, 0, 0),
+                                [0, i*200], [3*200, i*200], 5)
+            pygame.draw.line(self.screen, (0, 0, 0),
+                                [i*200, 0], [i*200, 3*200], 5)
+        for i in range(3):
+            for j in range(3):
+                if self.board[j][i] != 0:
+                    if self.board[j][i] % 2 == 0:
+                        # circle
+                        pygame.draw.circle(self.screen, (255, 0, 0), [
+                                            100+j*200, 100+i*200], 100, 10)
+                    else:
+                        # cross
+                        pygame.draw.line(self.screen, (0, 0, 255),
+                                            [200*j, 200*i], [200*(j+1), 200*(i+1)], 10)
+                        pygame.draw.line(self.screen, (0, 0, 255),
+                                            [200*j, 200*(i+1)], [200*(j+1), 200*i], 10)
 
-            pygame.display.update()
+        pygame.display.update()
 
     def judge_win(self, x, y):
         '''
@@ -187,16 +187,23 @@ class tic_tac_toe:
         if random.randint(1, 10) < 8:
             # get the smost significant strategy
             maxaction = 0
+            flag = True
             for action in current_node.actions:
-                if current_node[action] > current_node[maxaction]:
+                if flag:
+                    maxaction = action
+                    flag = False
+                if current_node.actions[action] > current_node.actions[maxaction]:
                     maxaction = action
             return maxaction
         else:
             # get the random choosed strategy
-            return random.choice(current_node.actions)
+            actions = []
+            for action in current_node.actions:
+                actions.append(action)
+            return random.choice(actions)
 
     def Q_function(self, q, maxq, alpha, discount_factor, reward):
-        return q+(1-alpha)(reward+discount_factor*maxq-q)
+        return q+(1-alpha)*(reward+discount_factor*maxq-q)
 
     def run(self):
         game = GAME()
@@ -204,38 +211,37 @@ class tic_tac_toe:
         tree = Tree(head_node)
         episode = 0
         while episode < 500:
-
-            pos = self.strategy_pi(tree.head_node)
-            y = pos // 3
-            x = pos % 3
-            game.put_chess(x, y)
-            node = Node(tree.head_node, pos)
-            tree.insert(tree.head_node, node)
-            current_node = node
+            print("episode:",episode)
+            current_node = tree.head_node
             # if the game not end
-            iswin = game.judge_win(x, y) 
+            iswin = 0 
             while iswin == 0:
                 # continue to go next step
-                pos = self.strategy_pi(tree.head_node)
+                pos = self.strategy_pi(current_node)
                 y = pos//3
                 x = pos % 3
                 game.put_chess(x, y)
+                game.run()
                 node = Node(current_node, pos)
                 tree.insert(current_node, node)
                 current_node = node
                 iswin = game.judge_win(x, y)
+                time.sleep(0.1)
+
 
             # if the game end:
             # use Q function update every node use trace back
             # if win, reward 100
             # if lose, reward -100
             # if equal, reward 10
-            end_node = len(current_node.states)%2
-            temp = current_node.states[len(current_node.states)-1]
+            print(current_node.states)
+            le = len(current_node.states)
+            end_node = le%2
+            temp = current_node.states[le-1]
+            maxq = tree.find_max_actions(current_node)
             current_node = current_node.parent_node
-            while current_node != tree.head_node:
+            while current_node != None:
                 q = current_node.actions[temp]
-                maxq = tree.find_max_actions(current_node)
                 if iswin == 1:
                     if len(current_node.states)%2 == end_node:
                         current_node.actions[temp]=self.Q_function(q,maxq,self.alpha,self.discount_factor,100)
@@ -243,13 +249,25 @@ class tic_tac_toe:
                         current_node.actions[temp]=self.Q_function(q,maxq,self.alpha,self.discount_factor,-100)
                 elif iswin == 2:
                     current_node.actions[temp]=self.Q_function(q,maxq,self.alpha,self.discount_factor,10)
-                temp = current_node.states[len(current_node.states)-1]
+                le = len(current_node.states)-1
+                if le == -1:
+                    break
+                temp = current_node.states[le]
+                maxq = tree.find_max_actions(current_node)
                 current_node = current_node.parent_node
-                        
+                # print(current_node.actions)
+                # print(temp)
+                # print(current_node.states)
+                # if current_node.parent_node!=None:
+                #     print(current_node.parent_node.states)
             # restart the game
             game.restart()
+            episode+=1
 
 
 if __name__ == "__main__":
-    newGame = GAME()
-    newGame.run()
+    # newGame = GAME()
+    # newGame.run()
+    
+    game = tic_tac_toe(0.1,0.5)
+    game.run()

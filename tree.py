@@ -5,16 +5,19 @@ class Node:
     actions contain the q value of action, achieved by dictionay
     '''
     def __init__(self,parent_node,state):
-
-        self.states = [x for x in parent_node.states]
-        self.states.append(state)
+        self.states = []
+        if parent_node!=None:
+            self.states = [x for x in parent_node.states]
+        if state != None:
+            self.states.append(state)
         self.next_node = None
         self.child_node = None
         self.parent_node = parent_node
         self.actions={}
         #here I put the initial q value to the actions which doesn't contain any chess
-        states_len = len(self.states)
-        for i in range(9):
+        
+        #states_len = len(self.states)
+        for i in range(0,9):
             if i not in self.states:
                 self.actions[i]=0
     def isEqual(self,node):
@@ -44,12 +47,15 @@ class Tree:
         '''
         if parent_node.child_node == None:
             parent_node.child_node = node
+            node.parent_node = parent_node
         else:
-            current_node = parent_node.next_node
+            current_node = parent_node.child_node
             while current_node.next_node!=None:
                 if current_node.isEqual(node):
                     return
                 current_node = current_node.next_node
+            if current_node.isEqual(node):
+                return
             current_node.next_node = node
             node.parent_node = current_node
             
